@@ -11,10 +11,21 @@ on:
   push:
     # Sequence of patterns matched against refs/heads
     branches:
+      - 'main'
       - 'releases/**'
     # Sequence of patterns matched against refs/tags
     tags:
       - '*'
+    # 仅当客户端相关文件变更时触发
+    paths:
+      - 'client/**'
+      - 'codec/**'
+      - 'buildSrc/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'gradle/**'
+      - '.github/workflows/client.yml'
 
 permissions:
   contents: write
