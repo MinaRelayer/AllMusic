@@ -3,6 +3,7 @@ package com.coloryr.allmusic.server;
 import com.coloryr.allmusic.codec.MusicPack;
 import com.coloryr.allmusic.codec.MusicPacketCodec;
 import com.coloryr.allmusic.server.core.AllMusic;
+import com.coloryr.allmusic.server.core.command.PermissionList;
 import com.coloryr.allmusic.server.core.IEconomy;
 import com.coloryr.allmusic.server.core.music.PlayMusic;
 import com.coloryr.allmusic.server.core.objs.music.PlayerAddMusicObj;
@@ -204,9 +205,11 @@ public class SideVelocity extends BaseSide implements IEconomy {
 
     @Override
     public boolean checkPermission(Object player, String permission) {
+        // 先检查是否为管理员（控制台或allmusic.admin权限）
         if (checkPermission(player)) {
             return true;
         }
+        // 再检查具体权限节点
         if (player instanceof PermissionSubject) {
             return ((PermissionSubject) player).hasPermission(permission);
         }
@@ -215,7 +218,15 @@ public class SideVelocity extends BaseSide implements IEconomy {
 
     @Override
     public boolean checkPermission(Object player) {
-        return player instanceof ConsoleCommandSource;
+        // 控制台拥有所有权限
+        if (player instanceof ConsoleCommandSource) {
+            return true;
+        }
+        // 检查allmusic.admin权限节点
+        if (player instanceof PermissionSubject) {
+            return ((PermissionSubject) player).hasPermission(PermissionList.PERMISSION_ADMIN);
+        }
+        return false;
     }
 
     @Override

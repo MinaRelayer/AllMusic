@@ -3,6 +3,7 @@ package com.coloryr.allmusic.server;
 import com.coloryr.allmusic.codec.MusicPack;
 import com.coloryr.allmusic.codec.MusicPacketCodec;
 import com.coloryr.allmusic.server.core.AllMusic;
+import com.coloryr.allmusic.server.core.command.PermissionList;
 import com.coloryr.allmusic.server.core.objs.music.PlayerAddMusicObj;
 import com.coloryr.allmusic.server.core.objs.music.SongInfoObj;
 import com.coloryr.allmusic.server.core.side.BaseSide;
@@ -87,9 +88,11 @@ public class SideFolia extends BaseSide {
 
     @Override
     public boolean checkPermission(Object player, String permission) {
+        // 先检查是否为管理员（控制台或allmusic.admin权限）
         if (checkPermission(player)) {
             return true;
         }
+        // 再检查具体权限节点
         if (player instanceof Permissible permissible) {
             return permissible.hasPermission(permission);
         }
@@ -98,9 +101,17 @@ public class SideFolia extends BaseSide {
 
     @Override
     public boolean checkPermission(Object player) {
+        // 控制台拥有所有权限
         if (player instanceof ConsoleCommandSender) {
             return true;
         }
+        // 先检查allmusic.admin权限节点
+        if (player instanceof Permissible permissible) {
+            if (permissible.hasPermission(PermissionList.PERMISSION_ADMIN)) {
+                return true;
+            }
+        }
+        // 回退到OP判断（兼容无权限插件的场景）
         if (player instanceof ServerOperator player1) {
             return player1.isOp();
         }
