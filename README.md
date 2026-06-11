@@ -48,6 +48,16 @@ allmusic文件夹下的api文件夹放音乐api构建出来的jar
 3. 使用 `gradlew :server:buildServer` 构建服务器
 4. 使用 `gradlew :client:buildClient` 构建客户端
 
+### 单独构建指定平台
+- 构建服务端指定平台：`gradlew -Pplatform=<平台名> :server:<平台名>:build`
+  - 例如：`gradlew -Pplatform=spigot :server:spigot:build`
+- 构建客户端指定平台：`gradlew -Pplatform=<平台名> :client:<平台名>:build`
+  - 例如：`gradlew -Pplatform=fabric_1_21 :client:fabric_1_21:build`
+
+### 支持的平台
+**服务端：** Velocity、Folia、Spigot、Paper、Fabric、Forge、NeoForge  
+**客户端：** Fabric、Forge、NeoForge
+
 ## PAPI变量  
 > %allmusic_now_music_name% 歌曲名字  
 > %allmusic_now_music_al% 歌曲专辑  
@@ -180,7 +190,8 @@ allmusic文件夹下的api文件夹放音乐api构建出来的jar
 - /music test [音乐API] [ID] 测试歌曲内容解析
 
 若开启权限后  
-- 点歌需要权限`allmusic.addmusic`
-- 搜歌需要权限`allmusic.search`
-- 插歌需要权限`allmusic.push`
-- 投票切歌需要权限`allmusic.vote`
+- 点歌需要权限 `allmusic.addmusic`
+- 搜歌需要权限 `allmusic.search`
+- 插歌需要权限 `allmusic.push`
+- 投票切歌需要权限 `allmusic.vote`
+- 管理员权限节点 `allmusic.admin`（支持 LuckPerms 等权限插件）
