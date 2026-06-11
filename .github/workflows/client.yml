@@ -40,7 +40,7 @@ jobs:
           'forge_1_16_5'
         ]
     runs-on: windows-latest
-    name: client ${{ matrix.platform }}
+    name: ${{ matrix.platform }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
