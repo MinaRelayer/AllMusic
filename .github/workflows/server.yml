@@ -2,11 +2,8 @@ name: AllMusic Server
 
 on:
   push:
-    branches:
-      - 'main'
-      - 'releases/**'
-    tags:
-      - '*'
+    branches: ['main', 'releases/**']
+    tags: ['*']
     paths:
       - 'server/**'
       - 'codec/**'
@@ -25,71 +22,91 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [
-          'velocity',
-          'folia',
-          'spigot',
-          'paper',
-          'fabric_26_1',
-          'fabric_1_21_11',
-          'fabric_1_21_6',
-          'fabric_1_21',
-          'fabric_1_20_1',
-          'fabric_1_16_5',
-          'neoforge_26_1',
-          'neoforge_1_21_11',
-          'neoforge_1_21_6',
-          'neoforge_1_21',
-          'forge_1_20_1',
-          'forge_1_16_5'
-        ]
+        include:
+          # Bukkit 系
+          - { platform: 'velocity', display: 'Velocity' }
+          - { platform: 'folia',    display: 'Folia' }
+          - { platform: 'spigot',   display: 'Spigot' }
+          - { platform: 'paper',    display: 'Paper' }
+          # Fabric
+          - { platform: 'fabric_26_1',    display: 'Fabric 26.1' }
+          - { platform: 'fabric_1_21_11', display: 'Fabric 1.21.11' }
+          - { platform: 'fabric_1_21_6',  display: 'Fabric 1.21.6' }
+          - { platform: 'fabric_1_21',    display: 'Fabric 1.21' }
+          - { platform: 'fabric_1_20_1',  display: 'Fabric 1.20.1' }
+          - { platform: 'fabric_1_16_5',  display: 'Fabric 1.16.5' }
+          # NeoForge
+          - { platform: 'neoforge_26_1',    display: 'NeoForge 26.1' }
+          - { platform: 'neoforge_1_21_11', display: 'NeoForge 1.21.11' }
+          - { platform: 'neoforge_1_21_6',  display: 'NeoForge 1.21.6' }
+          - { platform: 'neoforge_1_21',    display: 'NeoForge 1.21' }
+          # Forge
+          - { platform: 'forge_1_20_1', display: 'Forge 1.20.1' }
+          - { platform: 'forge_1_16_5', display: 'Forge 1.16.5' }
+
     runs-on: windows-latest
-    name: ${{ matrix.platform }}
+    name: ${{ matrix.display }}
+
     steps:
-      - name: Checkout code
+      - name: 检出代码
         uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: Set up JDK 25
+
+      - name: 设置 JDK 25
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
-      - name: Setup Gradle
+
+      - name: 配置 Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: build ${{ matrix.platform }}
+        with:
+          gradle-version: '8.10'
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: 构建 ${{ matrix.display }}
         shell: cmd
-        run: |
-          gradlew :server:${{ matrix.platform }}:build
-      - name: upload ${{ matrix.platform }}
+        run: gradlew -Pplatform=${{ matrix.platform }} :server:${{ matrix.platform }}:build --no-daemon -x check
+
+      - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: server_${{ matrix.platform }}
-          path: build/
+          path: '**/build/*.jar'
+          if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'debug')
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Download all artifacts
+      - name: 下载构建产物
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-      - name: Collect jars
+
+      - name: 收集 JAR 文件
         run: |
           mkdir -p release_jars
           find artifacts -name "*.jar" -exec cp {} release_jars/ \;
-      - name: Create Pre-release and Upload Assets
+          ls -la release_jars/
+
+      - name: 创建预发布版本
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
           tag_name: ${{ github.ref_name }}
           name: "Pre-release ${{ github.ref_name }}"
-          body: "自动构建的预发布版本"
-          files: |
-            release_jars/*.jar
+          body: |
+            自动构建的预发布版本
+
+            **服务端平台:**
+            - Velocity, Folia, Spigot, Paper
+            - Fabric (1.16.5, 1.20.1, 1.21, 1.21.6, 1.21.11, 26.1)
+            - Forge (1.16.5, 1.20.1)
+            - NeoForge (1.21, 1.21.6, 1.21.11, 26.1)
+          files: release_jars/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
