@@ -65,11 +65,17 @@ jobs:
         shell: cmd
         run: gradlew -Pplatform=${{ matrix.platform }} :server:${{ matrix.platform }}:build --no-daemon -x check
 
+      - name: Collect JARs
+        shell: cmd
+        run: |
+          mkdir artifact_jars
+          copy /b build\*.jar artifact_jars\
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: server_${{ matrix.platform }}
-          path: '**/build/*.jar'
+          path: artifact_jars/*.jar
           if-no-files-found: error
 
   release:
