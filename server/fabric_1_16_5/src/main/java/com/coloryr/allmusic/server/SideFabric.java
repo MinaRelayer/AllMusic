@@ -39,7 +39,8 @@ public class SideFabric extends BaseSide {
     public boolean checkPermission(Object player) {
         CommandSourceStack source = (CommandSourceStack) player;
         // 先检查LuckPerms权限节点，支持通过allmusic.admin授予管理员权限
-        if (source.getEntity() instanceof ServerPlayer serverPlayer) {
+        if (source.getEntity() instanceof ServerPlayer) {
+            ServerPlayer serverPlayer = (ServerPlayer) source.getEntity();
             if (serverPlayer.hasPermissions(PermissionList.PERMISSION_ADMIN)) {
                 return true;
             }
@@ -62,7 +63,8 @@ public class SideFabric extends BaseSide {
             return true;
         }
         // 再检查具体权限节点
-        if (source.getEntity() instanceof ServerPlayer serverPlayer) {
+        if (source.getEntity() instanceof ServerPlayer) {
+            ServerPlayer serverPlayer = (ServerPlayer) source.getEntity();
             if (serverPlayer.hasPermissions(permission)) {
                 return true;
             }
