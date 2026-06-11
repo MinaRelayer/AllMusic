@@ -59,7 +59,7 @@ jobs:
 
       - name: Build ${{ matrix.display }}
         shell: cmd
-        run: gradlew -Pplatform=${{ matrix.platform }} :client:${{ matrix.platform }}:build --no-daemon -x check
+        run: gradlew -Pplatform=${{ matrix.platform }} :client:${{ matrix.platform }}:build --no-daemon
 
       - name: Collect JARs
         shell: cmd
