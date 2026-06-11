@@ -38,14 +38,8 @@ public class SideFabric extends BaseSide {
     @Override
     public boolean checkPermission(Object player) {
         CommandSourceStack source = (CommandSourceStack) player;
-        // 先检查LuckPerms权限节点，支持通过allmusic.admin授予管理员权限
-        if (source.getEntity() instanceof ServerPlayer) {
-            ServerPlayer serverPlayer = (ServerPlayer) source.getEntity();
-            if (serverPlayer.hasPermissions(PermissionList.PERMISSION_ADMIN)) {
-                return true;
-            }
-        }
-        // 回退到命令等级2检查（兼容无权限插件的场景，控制台也会通过此检查）
+        // Fabric 1.16.5 的 ServerPlayer.hasPermissions() 只接受 int 参数，
+        // 无法通过字符串检查 LuckPerms 权限节点，直接回退到命令等级2检查
         return source.hasPermission(2);
     }
 
@@ -57,19 +51,9 @@ public class SideFabric extends BaseSide {
 
     @Override
     public boolean checkPermission(Object player, String permission) {
-        CommandSourceStack source = (CommandSourceStack) player;
-        // 先检查是否为管理员（控制台或allmusic.admin权限）
-        if (checkPermission(player)) {
-            return true;
-        }
-        // 再检查具体权限节点
-        if (source.getEntity() instanceof ServerPlayer) {
-            ServerPlayer serverPlayer = (ServerPlayer) source.getEntity();
-            if (serverPlayer.hasPermissions(permission)) {
-                return true;
-            }
-        }
-        return false;
+        // Fabric 1.16.5 的 ServerPlayer.hasPermissions() 只接受 int 参数，
+        // 无法通过字符串检查 LuckPerms 权限节点，直接回退到管理员判断
+        return checkPermission(player);
     }
 
     @Override

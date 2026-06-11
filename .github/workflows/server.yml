@@ -1,22 +1,12 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
 name: AllMusic Server
 
 on:
   push:
-    # Sequence of patterns matched against refs/heads
     branches:
       - 'main'
       - 'releases/**'
-    # Sequence of patterns matched against refs/tags
     tags:
       - '*'
-    # 仅当服务端相关文件变更时触发
     paths:
       - 'server/**'
       - 'codec/**'
@@ -31,8 +21,30 @@ permissions:
   contents: write
 
 jobs:
-  build_server:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [
+          'velocity',
+          'folia',
+          'spigot',
+          'paper',
+          'fabric_26_1',
+          'fabric_1_21_11',
+          'fabric_1_21_6',
+          'fabric_1_21',
+          'fabric_1_20_1',
+          'fabric_1_16_5',
+          'neoforge_26_1',
+          'neoforge_1_21_11',
+          'neoforge_1_21_6',
+          'neoforge_1_21',
+          'forge_1_20_1',
+          'forge_1_16_5'
+        ]
     runs-on: windows-latest
+    name: server ${{ matrix.platform }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,17 +57,32 @@ jobs:
           distribution: 'temurin'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: build
+      - name: build ${{ matrix.platform }}
         shell: cmd
         run: |
-          gradlew :server:buildServer
-      - name: update
+          gradlew :server:${{ matrix.platform }}:build
+      - name: upload ${{ matrix.platform }}
         uses: actions/upload-artifact@v4
         with:
-          name: "allmusic_server"
+          name: server_${{ matrix.platform }}
           path: build/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'debug')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Collect jars
+        run: |
+          mkdir -p release_jars
+          find artifacts -name "*.jar" -exec cp {} release_jars/ \;
       - name: Create Pre-release and Upload Assets
-        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'debug')
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
@@ -63,6 +90,6 @@ jobs:
           name: "Pre-release ${{ github.ref_name }}"
           body: "自动构建的预发布版本"
           files: |
-            build/*.jar
+            release_jars/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
