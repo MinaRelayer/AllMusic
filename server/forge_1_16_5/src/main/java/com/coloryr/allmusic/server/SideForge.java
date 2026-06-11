@@ -39,18 +39,14 @@ public class SideForge extends BaseSide {
     }
 
     @Override
-    public boolean checkPermission(Object player, String permission) {
-        // Forge 1.16.5 的 ServerPlayer.hasPermissions() 只接受 int 参数，
-        // 无法通过字符串检查 LuckPerms 权限节点，直接回退到管理员判断
-        return checkPermission(player);
+    public boolean checkPermission(Object player) {
+        CommandSourceStack source = (CommandSourceStack) player;
+        return source.hasPermission(2);
     }
 
     @Override
-    public boolean checkPermission(Object player) {
-        CommandSourceStack source = (CommandSourceStack) player;
-        // Forge 1.16.5 的 ServerPlayer.hasPermissions() 只接受 int 参数，
-        // 无法通过字符串检查 LuckPerms 权限节点，直接回退到命令等级2检查
-        return source.hasPermission(2);
+    public boolean checkPermission(Object player, String permission) {
+        return checkPermission(player);
     }
 
     @Override
