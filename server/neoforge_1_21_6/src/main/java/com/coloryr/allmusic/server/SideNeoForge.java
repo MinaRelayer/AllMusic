@@ -33,7 +33,7 @@ public class SideNeoForge extends BaseSide {
     @Override
     public boolean checkPermission(Object player) {
         CommandSourceStack source = (CommandSourceStack) player;
-        return source.permissions() == PermissionSet.ALL_PERMISSIONS;
+        return source.hasPermission(2);
     }
 
     @Override
