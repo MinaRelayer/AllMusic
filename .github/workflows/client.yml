@@ -2,8 +2,7 @@ name: AllMusic Client
 
 on:
   push:
-    branches: ['main', 'releases/**']
-    tags: ['*']
+    branches: ['main']
     paths:
       - 'client/**'
       - 'codec/**'
@@ -15,7 +14,7 @@ on:
       - '.github/workflows/client.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -74,36 +73,3 @@ jobs:
           path: artifact_jars/*.jar
           if-no-files-found: error
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'debug')
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Collect JARs
-        run: |
-          mkdir -p release_jars
-          find artifacts -name "*.jar" -exec cp {} release_jars/ \;
-          ls -la release_jars/
-
-      - name: Create pre-release
-        uses: softprops/action-gh-release@v1
-        with:
-          prerelease: true
-          tag_name: ${{ github.ref_name }}
-          name: "Pre-release ${{ github.ref_name }}"
-          body: |
-            Auto-built pre-release
-
-            **Client platforms:**
-            - Fabric (1.16.5, 1.20.1, 1.21, 1.21.6, 1.21.11, 26.1)
-            - Forge (1.16.5, 1.20.1)
-            - NeoForge (1.21, 1.21.6, 1.21.11, 26.1)
-          files: release_jars/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
