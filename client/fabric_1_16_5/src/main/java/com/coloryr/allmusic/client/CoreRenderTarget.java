@@ -74,9 +74,9 @@ public class CoreRenderTarget extends TextFrameBuffer {
         int width;
 
         if (shadow) {
-            width = font.drawShadow(new PoseStack(), component, 0, 0, color);
+            width = font.drawShadow(new PoseStack(), component, 0, y + 1, color);
         } else {
-            width = font.draw(new PoseStack(), component, 0, 0, color);
+            width = font.draw(new PoseStack(), component, 0, y + 1, color);
         }
 
         RenderSystem.disableDepthTest();

@@ -100,7 +100,7 @@ public class CoreRenderTarget extends TextFrameBuffer {
 
         GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(Minecraft.getInstance(), renderState, i, j);
         color = color | 0xFF000000;
-        graphics.text(font, component, 0, y, color, shadow);
+        graphics.text(font, component, 0, y + 1, color, shadow);
 
         renderer.render(fogRenderer.getBuffer(FogRenderer.FogMode.NONE), this);
 

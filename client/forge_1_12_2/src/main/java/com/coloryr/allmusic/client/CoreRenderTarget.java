@@ -68,9 +68,9 @@ public class CoreRenderTarget extends TextFrameBuffer {
         int width;
 
         if (shadow) {
-            width = font.drawStringWithShadow(text, 0, 0, color);
+            width = font.drawStringWithShadow(text, 0, y + 1, color);
         } else {
-            width = font.drawString(text, 0, 0, color);
+            width = font.drawString(text, 0, y + 1, color);
         }
 
         TextItem item = new TextItem(width, font.FONT_HEIGHT + (shadow ? 1 : 0), y, (float) scaledresolution.getScaledWidth());

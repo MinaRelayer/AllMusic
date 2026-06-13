@@ -75,7 +75,7 @@ public class CoreRenderTarget extends TextFrameBuffer {
 
         var font = Minecraft.getInstance().font;
         Component component = MiniMessage.parse(text);
-        int width = font.drawInBatch(component, 0, y, color, shadow, new Matrix4f(), renderBuffers.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        int width = font.drawInBatch(component, 0, y + 1, color, shadow, new Matrix4f(), renderBuffers.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
         RenderSystem.disableDepthTest();
         renderBuffers.bufferSource().endBatch();
         RenderSystem.enableDepthTest();

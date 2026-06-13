@@ -103,7 +103,7 @@ public class HudObj {
         if (picSpeed == null)
             picSpeed = "<light_purple>[AllMusic]<yellow>设置图片旋转速度为[" + ARG.value + "]";
         if (music == null)
-            music = ARG.name + " " + ARG.musicAuthor + "\n" + ARG.musicAlia + "\n" + ARG.musicAl
+            music = ARG.name + "\n" + ARG.musicAuthor + "\n" + ARG.musicAl
                     + "\nby: " + ARG.player;
         if (lyric == null)
             lyric = ARG.lyric;

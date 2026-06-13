@@ -420,10 +420,9 @@ public class AllMusicHud {
                 infoRender.resize(allWidth, allHeight);
                 infoRender.use();
                 for (String item : temp) {
-                    if (item.isEmpty()) {
-                        continue;
+                    if (!item.isEmpty()) {
+                        infoRender.drawText(item, offset, save.info.color, save.info.shadow);
                     }
-                    infoRender.drawText(item, offset, save.info.color, save.info.shadow);
                     offset += save.info.gap;
                 }
                 infoRender.unUse();
