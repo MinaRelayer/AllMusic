@@ -22,6 +22,6 @@ side = "BOTH"
 [[dependencies.allmusic_server]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.1)"
+versionRange = "[26.1,)"
 ordering = "NONE"
 side = "BOTH"
