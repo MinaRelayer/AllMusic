@@ -55,7 +55,7 @@ public class AllMusic {
     /**
      * 配置文件版本号
      */
-    public static final String configVersion = "400";
+    public static final String configVersion = "401";
     /**
      * 语言文件配置版本号
      */
