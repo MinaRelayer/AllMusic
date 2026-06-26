@@ -1,57 +1,69 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
 name: AllMusic Server
 
 on:
   push:
-    # Sequence of patterns matched against refs/heads
-    branches:
-      - 'releases/**'
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - '*'
+    branches: ['dev']
+    paths:
+      - 'server/**'
+      - 'codec/**'
+      - '.github/workflows/server.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build_server:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: 'velocity', display: 'Velocity' }
+          - { platform: 'folia',    display: 'Folia' }
+          - { platform: 'spigot',   display: 'Spigot' }
+          - { platform: 'paper',    display: 'Paper' }
+          - { platform: 'fabric_26_2',    display: 'Fabric 26.2' }
+          - { platform: 'fabric_26_1',    display: 'Fabric 26.1' }
+          - { platform: 'fabric_1_21_11', display: 'Fabric 1.21.11' }
+          - { platform: 'fabric_1_21_6',  display: 'Fabric 1.21.6' }
+          - { platform: 'fabric_1_21',    display: 'Fabric 1.21' }
+          - { platform: 'fabric_1_20_1',  display: 'Fabric 1.20.1' }
+          - { platform: 'fabric_1_16_5',  display: 'Fabric 1.16.5' }
+          - { platform: 'neoforge_26_2',    display: 'NeoForge 26.2' }
+          - { platform: 'neoforge_26_1',    display: 'NeoForge 26.1' }
+          - { platform: 'neoforge_1_21_11', display: 'NeoForge 1.21.11' }
+          - { platform: 'neoforge_1_21_6',  display: 'NeoForge 1.21.6' }
+          - { platform: 'neoforge_1_21',    display: 'NeoForge 1.21' }
+          - { platform: 'forge_1_20_1', display: 'Forge 1.20.1' }
+          - { platform: 'forge_1_16_5', display: 'Forge 1.16.5' }
+          - { platform: 'forge_1_12_2', display: 'Forge 1.12.2' }
+          - { platform: 'forge_1_7_10', display: 'Forge 1.7.10' }
     runs-on: windows-latest
+    name: ${{ matrix.display }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: 'true'
+
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: build
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Build ${{ matrix.display }}
         shell: cmd
-        run: |
-          gradlew :server:buildServer
-      - name: update
+        run: gradlew -Pplatform=${{ matrix.platform }} :server:${{ matrix.platform }}:build --no-daemon --configure-on-demand
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "allmusic_server"
-          path: build/
-      - name: Create Pre-release and Upload Assets
-        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'debug')
-        uses: softprops/action-gh-release@v1
-        with:
-          prerelease: true
-          tag_name: ${{ github.ref_name }}
-          name: "Pre-release ${{ github.ref_name }}"
-          body: "自动构建的预发布版本"
-          files: |
-            build/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ matrix.display }}
+          path: build/*.jar
+          if-no-files-found: error
