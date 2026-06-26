@@ -3,6 +3,7 @@ package com.coloryr.allmusic.server;
 import com.coloryr.allmusic.codec.MusicPack;
 import com.coloryr.allmusic.codec.MusicPacketCodec;
 import com.coloryr.allmusic.server.core.AllMusic;
+import com.coloryr.allmusic.server.core.command.PermissionList;
 import com.coloryr.allmusic.server.core.IEconomy;
 import com.coloryr.allmusic.server.core.music.PlayMusic;
 import com.coloryr.allmusic.server.core.objs.music.PlayerAddMusicObj;
@@ -217,7 +218,13 @@ public class SideVelocity extends BaseSide implements IEconomy {
 
     @Override
     public boolean checkPermission(Object player) {
-        return player instanceof ConsoleCommandSource;
+        if (player instanceof ConsoleCommandSource) {
+            return true;
+        }
+        if (AllMusic.getConfig().needPermission && player instanceof PermissionSubject) {
+            return ((PermissionSubject) player).hasPermission(PermissionList.PERMISSION_ADMIN);
+        }
+        return false;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.coloryr.allmusic.server;
 import com.coloryr.allmusic.codec.MusicPack;
 import com.coloryr.allmusic.codec.MusicPacketCodec;
 import com.coloryr.allmusic.server.core.AllMusic;
+import com.coloryr.allmusic.server.core.command.PermissionList;
 import com.coloryr.allmusic.server.core.objs.music.PlayerAddMusicObj;
 import com.coloryr.allmusic.server.core.objs.music.SongInfoObj;
 import com.coloryr.allmusic.server.core.side.BaseSide;
@@ -102,6 +103,11 @@ public class SideFolia extends BaseSide {
     public boolean checkPermission(Object player) {
         if (player instanceof ConsoleCommandSender) {
             return true;
+        }
+        if (AllMusic.getConfig().needPermission && player instanceof Permissible p) {
+            if (p.hasPermission(PermissionList.PERMISSION_ADMIN)) {
+                return true;
+            }
         }
         if (player instanceof ServerOperator player1) {
             return player1.isOp();
