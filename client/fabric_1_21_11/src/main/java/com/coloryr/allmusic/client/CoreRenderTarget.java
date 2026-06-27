@@ -82,6 +82,7 @@ public class CoreRenderTarget extends TextFrameBuffer {
 
     @Override
     public void unUse() {
+        renderer.render(fogRenderer.getBuffer(FogRenderer.FogMode.NONE), this);
         isDraw = false;
     }
 
@@ -100,8 +101,6 @@ public class CoreRenderTarget extends TextFrameBuffer {
         GuiGraphics graphics = new GuiGraphics(Minecraft.getInstance(), renderState, i, j);
         color = color | 0xFF000000;
         graphics.drawString(font, component, 0, y, color, shadow);
-
-        renderer.render(fogRenderer.getBuffer(FogRenderer.FogMode.NONE), this);
 
         TextItem item = new TextItem(width, font.lineHeight + (shadow ? 1 : 0), y, (float) window.getGuiScale());
         texts.add(item);
