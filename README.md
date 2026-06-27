@@ -160,6 +160,7 @@ AllMusic不会内置音乐api，你想要正常使用需要自己安装
 - /music test [音乐API] [ID] 测试歌曲内容解析
 
 若开启权限后  
+- [仅插件端]管理员需要权限`allmusic.admin`
 - 点歌需要权限`allmusic.addmusic`
 - 搜歌需要权限`allmusic.search`
 - 插歌需要权限`allmusic.push`
