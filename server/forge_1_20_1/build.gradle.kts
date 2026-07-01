@@ -22,6 +22,7 @@ dependencies {
 
     modImplementation(include("net.kyori:adventure-text-minimessage:4.26.1")!!)
     modImplementation(include("net.kyori:adventure-api:4.26.1")!!)
+    modImplementation(include("net.kyori:adventure-text-serializer-json:4.14.0")!!)
     modImplementation(include("net.kyori:adventure-text-serializer-gson:4.14.0")!!)
     modImplementation(include("net.kyori:adventure-text-serializer-legacy:4.14.0")!!)
     modImplementation(include("net.kyori:adventure-text-serializer-plain:4.14.0")!!)
